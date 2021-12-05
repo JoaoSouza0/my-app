@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 export default styled.input`
   width: 100%;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.04);
+  box-shadow: ${({ theme }) => theme.boxShadow};
   background-color: #fff;
   height: 52px;
   border: 2px solid #fff;

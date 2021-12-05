@@ -11,5 +11,11 @@ export default {
       900: '#222222',
       200: '#bcbcbcbc',
     },
+    danger: {
+      light: '#f97171',
+      main: '#fc5050',
+      dark: '#fc3131',
+    },
   },
+  boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.04)',
 };
