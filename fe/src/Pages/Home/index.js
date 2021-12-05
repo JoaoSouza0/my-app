@@ -1,5 +1,10 @@
+import { Link } from 'react-router-dom';
 import {
-  Container, Header, ListContainer, Card, InputSearchContainer,
+  Container,
+  Header,
+  ListContainer,
+  Card,
+  InputSearchContainer,
 } from './style';
 import arrow from '../../assets/image/Icons/arrow.svg';
 import finder from '../../assets/image/Icons/finder.svg';
@@ -11,9 +16,10 @@ export function Home() {
       <InputSearchContainer>
         <input type="text" placeholder="Pesquisar Contato" />
       </InputSearchContainer>
+
       <Header>
         <strong>3 contatos</strong>
-        <a href="/">New Contact</a>
+        <Link to="/new">New Contact</Link>
       </Header>
       <ListContainer>
         <header>
@@ -34,49 +40,9 @@ export function Home() {
           </div>
 
           <div className="actions">
-            <a href="/">
+            <Link to="/edit/123">
               <img src={finder} alt="edit" />
-            </a>
-            <button type="button">
-              <img src={trash} alt="trash" />
-            </button>
-          </div>
-        </Card>
-
-        <Card>
-          <div className="info">
-            <div className="contact-name">
-              <strong>João Victor</strong>
-              <small>instragram</small>
-            </div>
-            <span>email@email.com.br</span>
-            <span>(11) 91111-1111 </span>
-          </div>
-
-          <div className="actions">
-            <a href="/">
-              <img src={finder} alt="edit" />
-            </a>
-            <button type="button">
-              <img src={trash} alt="trash" />
-            </button>
-          </div>
-        </Card>
-
-        <Card>
-          <div className="info">
-            <div className="contact-name">
-              <strong>João Victor</strong>
-              <small>instragram</small>
-            </div>
-            <span>email@email.com.br</span>
-            <span>(11) 91111-1111 </span>
-          </div>
-
-          <div className="actions">
-            <a href="/">
-              <img src={finder} alt="edit" />
-            </a>
+            </Link>
             <button type="button">
               <img src={trash} alt="trash" />
             </button>
