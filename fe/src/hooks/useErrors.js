@@ -21,5 +21,10 @@ export default function useErrors() {
     return errors[fieldName]?.message;
   }
 
-  return { setError, removeError, getErrorMessageByFieldName };
+  return {
+    setError,
+    removeError,
+    getErrorMessageByFieldName,
+    errors,
+  };
 }

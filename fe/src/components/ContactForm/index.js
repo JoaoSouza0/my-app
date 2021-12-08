@@ -13,24 +13,29 @@ export function ContactForm({ buttonLabel }) {
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [category, setCategory] = useState('');
-  const { setError, removeError, getErrorMessageByFieldName } = useErrors();
+  const {
+    setError, removeError, getErrorMessageByFieldName, errors,
+  } = useErrors();
+
+  const isFormValid = (name && Object.values(errors).length === 0);
 
   function handleNameChange({ target }) {
     setName(target.value);
-    if (!target.value) {
-      setError({ field: 'name', message: 'Nome é obrigatório' });
-    } else {
-      removeError('name');
-    }
+    return !target.value
+      ? setError({ field: 'name', message: 'Nome é obrigatório' })
+      : removeError('name');
+  }
+
+  function handlePhoneChange({ target }) {
+    setPhone(validations.formatPhone(target.value));
   }
 
   function handleEmailChange({ target }) {
     setEmail(target.value);
-    if (target.value && !validations.isEmailValid(target.value)) {
-      setError({ field: 'email', message: 'Email não é valido' });
-    } else {
-      removeError('email');
-    }
+    const isEmailValid = target.value && !validations.isEmailValid(target.value);
+    return isEmailValid
+      ? setError({ field: 'email', message: 'Email não é valido' })
+      : removeError('email');
   }
 
   function handleSubmit(event) {
@@ -42,7 +47,7 @@ export function ContactForm({ buttonLabel }) {
       <FormGroup error={getErrorMessageByFieldName('name')}>
         <Input
           error={getErrorMessageByFieldName('name')}
-          placeholder="Name"
+          placeholder="Name *"
           value={name}
           onChange={handleNameChange}
         />
@@ -62,7 +67,8 @@ export function ContactForm({ buttonLabel }) {
         <Input
           placeholder="Telefone"
           value={phone}
-          onChange={({ target }) => setPhone(target.value)}
+          onChange={handlePhoneChange}
+          maxLength="15"
         />
       </FormGroup>
 
@@ -78,7 +84,7 @@ export function ContactForm({ buttonLabel }) {
       </FormGroup>
 
       <ButtonContainer>
-        <Button type="submit">{buttonLabel}</Button>
+        <Button type="submit" disabled={!isFormValid}>{buttonLabel}</Button>
       </ButtonContainer>
     </Form>
   );
