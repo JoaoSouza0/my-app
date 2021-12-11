@@ -7,21 +7,20 @@ export const Container = styled.div`
 export const InputSearchContainer = styled.div`
   width: 100%;
 
-  input{
-      width: 100%;
-      background-color: #fff;
-      border: none;
-      border-radius: 25px;
-      height: 50px;
-      box-shadow: ${({ theme }) => theme.boxShadow};
-      outline: 0;
-      padding: 0 16px ;
+  input {
+    width: 100%;
+    background-color: #fff;
+    border: none;
+    border-radius: 25px;
+    height: 50px;
+    box-shadow: ${({ theme }) => theme.boxShadow};
+    outline: 0;
+    padding: 0 16px;
 
-      &::placeholder{
-        color: #BCBCBC;
-      }
+    &::placeholder {
+      color: #bcbcbc;
     }
-
+  }
 `;
 
 export const Header = styled.header`
@@ -50,10 +49,8 @@ export const Header = styled.header`
   }
 `;
 
-export const ListContainer = styled.div`
+export const ListHeader = styled.header`
   margin-top: 24px;
-
-  header {
     margin-bottom: 8px;
 
     button {
@@ -66,6 +63,11 @@ export const ListContainer = styled.div`
         margin-right: 8px;
         font-weight: bold;
         color: ${({ theme }) => theme.colors.primary.main};
+      }
+
+      img{
+        transition: transform 0.2s ease-in;
+        transform: ${({ order }) => (order === 'asc' ? 'rotate(0deg)' : 'rotate(180deg)')};
       }
     }
   }

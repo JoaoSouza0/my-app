@@ -1,46 +1,103 @@
+/* eslint-disable no-console */
 import { Link } from 'react-router-dom';
+import { useEffect, useState, useMemo } from 'react';
+import { validations } from '../../utils/validate';
 import {
   Container,
   Header,
-  ListContainer,
+  ListHeader,
   Card,
   InputSearchContainer,
 } from './style';
+import { Loader } from '../../components/Loader';
 import arrow from '../../assets/image/Icons/arrow.svg';
 import finder from '../../assets/image/Icons/finder.svg';
 import trash from '../../assets/image/Icons/trash.svg';
+import delay from '../../utils/delay';
 
 export function Home() {
+  const [constacts, setContacts] = useState([]);
+  const [orderBy, setOrderBy] = useState('asc');
+  const [searchTerm, setSeachTerm] = useState('');
+  const [isLoading, setLoading] = useState(true);
+
+  const filteredContacts = useMemo(
+    () => constacts.filter((item) => item.name.toLowerCase().includes(searchTerm)),
+    // eslint-disable-next-line comma-dangle
+    [constacts, searchTerm]
+  );
+
+  useEffect(() => {
+    /* Funções de efeito não podem ser assincronas
+      precisa criar uma função assinctona dentro do useEffecy */
+    async function loadContacts() {
+      try {
+        setLoading(true);
+        await delay(2000);
+        const response = await fetch(
+          `http://localhost:3001/contacts?orderBy=${orderBy}`,
+        );
+        const data = await response.json();
+        setContacts(data);
+      } catch (e) {
+        console.log(e);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadContacts();
+  }, [orderBy]);
+
+  function handleToggleOrderBy() {
+    setOrderBy((pState) => (pState === 'asc' ? 'desc' : 'asc'));
+  }
+
+  function handleChangeSearhTerm(event) {
+    setSeachTerm(event.target.value.toLowerCase());
+  }
+
   return (
     <Container>
+      <Loader isLoading={isLoading} />
       <InputSearchContainer>
-        <input type="text" placeholder="Pesquisar Contato" />
+        <input
+          value={searchTerm}
+          type="text"
+          placeholder="Pesquisar Contato"
+          onChange={handleChangeSearhTerm}
+        />
       </InputSearchContainer>
 
       <Header>
-        <strong>3 contatos</strong>
+        <strong>
+          {filteredContacts.length}
+          {filteredContacts.length === 1 ? ' contato' : ' contatos'}
+        </strong>
         <Link to="/new">New Contact</Link>
       </Header>
-      <ListContainer>
-        <header>
-          <button type="button">
+
+      <ListHeader order={orderBy}>
+        {filteredContacts.length > 0 && (
+          <button type="button" onClick={handleToggleOrderBy}>
             <span>Name</span>
             <img src={arrow} alt="Order Arrow" />
           </button>
-        </header>
+        )}
+      </ListHeader>
 
-        <Card>
+      {filteredContacts.map((item) => (
+        <Card key={item.id}>
           <div className="info">
             <div className="contact-name">
-              <strong>João Victor</strong>
-              <small>instragram</small>
+              <strong>{item.name}</strong>
+              {item.category_name && <small>{item.category_name}</small>}
             </div>
-            <span>email@email.com.br</span>
-            <span>(11) 91111-1111 </span>
+            <span>{item.email}</span>
+            <span>{validations.formatPhone(item.phone)}</span>
           </div>
 
           <div className="actions">
-            <Link to="/edit/123">
+            <Link to={`/edit/${item.id}`}>
               <img src={finder} alt="edit" />
             </Link>
             <button type="button">
@@ -48,7 +105,7 @@ export function Home() {
             </button>
           </div>
         </Card>
-      </ListContainer>
+      ))}
     </Container>
   );
 }

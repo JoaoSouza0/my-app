@@ -19,6 +19,5 @@
     "react/jsx-no-bind":"off",
     "dot-notation":"off",
     "no-param-reassign": "off"
-
   }
 }
