@@ -18,6 +18,7 @@
     "import/prefer-default-export": "off",
     "react/jsx-no-bind":"off",
     "dot-notation":"off",
-    "no-param-reassign": "off"
+    "no-param-reassign": "off",
+    "class-methods-use-this":"off"
   }
 }
