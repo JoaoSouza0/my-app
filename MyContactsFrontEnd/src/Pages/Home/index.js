@@ -1,7 +1,9 @@
 /* eslint-disable no-console */
 import { Link } from 'react-router-dom';
 import { useEffect, useState, useMemo } from 'react';
+import ContactsService from '../../services/ContactsService';
 import { validations } from '../../utils/validate';
+import { Loader } from '../../components/Loader';
 import {
   Container,
   Header,
@@ -9,11 +11,9 @@ import {
   Card,
   InputSearchContainer,
 } from './style';
-import { Loader } from '../../components/Loader';
 import arrow from '../../assets/image/Icons/arrow.svg';
 import finder from '../../assets/image/Icons/finder.svg';
 import trash from '../../assets/image/Icons/trash.svg';
-import delay from '../../utils/delay';
 
 export function Home() {
   const [constacts, setContacts] = useState([]);
@@ -33,11 +33,7 @@ export function Home() {
     async function loadContacts() {
       try {
         setLoading(true);
-        await delay(2000);
-        const response = await fetch(
-          `http://localhost:3001/contacts?orderBy=${orderBy}`,
-        );
-        const data = await response.json();
+        const data = await ContactsService.listContacts(orderBy);
         setContacts(data);
       } catch (e) {
         console.log(e);
