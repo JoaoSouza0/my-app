@@ -19,6 +19,7 @@
     "react/jsx-no-bind":"off",
     "dot-notation":"off",
     "no-param-reassign": "off",
-    "class-methods-use-this":"off"
+    "class-methods-use-this":"off",
+    "no-confusing-arrow":"off"
   }
 }
