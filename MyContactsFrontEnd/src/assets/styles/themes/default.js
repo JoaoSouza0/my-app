@@ -8,6 +8,7 @@ export default {
       lighter: '#e0e3ff',
     },
     gray: {
+      100: '#e5e5e5',
       900: '#222222',
       200: '#bcbcbcbc',
     },
