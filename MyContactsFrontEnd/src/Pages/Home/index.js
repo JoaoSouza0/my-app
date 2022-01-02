@@ -1,4 +1,7 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable no-console */
+/* eslint-disable-next-line comma-dangle */
+
 import { Link } from 'react-router-dom';
 import {
   useEffect, useState, useMemo, useCallback,
@@ -13,24 +16,27 @@ import {
   Card,
   InputSearchContainer,
   ErrorContianer,
+  EmptyListContainer,
+  SearchNotFoundContainer,
 } from './style';
 import arrow from '../../assets/image/Icons/arrow.svg';
 import finder from '../../assets/image/Icons/finder.svg';
+import loop from '../../assets/image/loop.svg';
+import emptyBox from '../../assets/image/empty-box.svg';
 import trash from '../../assets/image/Icons/trash.svg';
 import sad from '../../assets/image/sad.svg';
 import Button from '../../components/Button';
 
 export function Home() {
-  const [constacts, setContacts] = useState([]);
+  const [contacts, setContacts] = useState([]);
   const [orderBy, setOrderBy] = useState('asc');
   const [searchTerm, setSeachTerm] = useState('');
   const [isLoading, setLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
 
   const filteredContacts = useMemo(
-    () => constacts.filter((item) => item.name.toLowerCase().includes(searchTerm)),
-    // eslint-disable-next-line comma-dangle
-    [constacts, searchTerm]
+    () => contacts.filter((item) => item.name.toLowerCase().includes(searchTerm)),
+    [contacts, searchTerm],
   );
   const loadContacts = useCallback(async () => {
     try {
@@ -68,23 +74,36 @@ export function Home() {
     <Container>
       <Loader isLoading={isLoading} />
 
-      <InputSearchContainer>
-        <input
-          value={searchTerm}
-          type="text"
-          placeholder="Pesquisar Contato"
-          onChange={handleChangeSearhTerm}
-        />
-      </InputSearchContainer>
+      {(!hasError && contacts.length > 0) && (
+        <InputSearchContainer>
+          <input
+            value={searchTerm}
+            type="text"
+            placeholder="Pesquisar Contato"
+            onChange={handleChangeSearhTerm}
+          />
+        </InputSearchContainer>
+      )}
 
-      <Header error={hasError}>
-        {!hasError && (
-          <strong>
-            {filteredContacts.length}
-            {filteredContacts.length === 1 ? ' contato' : ' contatos'}
-          </strong>
+      <Header
+        justifyContent={
+          hasError
+            ? 'flex-end'
+            : (contacts.length > 0
+              ? 'space-between'
+              : 'center'
+            )
+        }
+      >
+        {!hasError && contacts.length > 0 && (
+          <>
+            <strong>
+              {filteredContacts.length}
+              {filteredContacts.length === 1 ? ' contato' : ' contatos'}
+            </strong>
+            <Link to="/new">New Contact</Link>
+          </>
         )}
-        <Link to="/new">New Contact</Link>
       </Header>
 
       {hasError && (
@@ -101,14 +120,34 @@ export function Home() {
 
       {!hasError && (
         <>
-          <ListHeader order={orderBy}>
-            {filteredContacts.length > 0 && (
+          {(contacts.length < 1 && !isLoading) && (
+            <EmptyListContainer>
+              <img src={emptyBox} alt="Empty Box" />
+              <p>
+                Você ainda não tem nenhum contato cadastrado!
+                Clique no botão <strong>”Novo contato”</strong> à
+                cima para cadastrar o seu primeiro!
+              </p>
+            </EmptyListContainer>
+          )}
+
+          {(contacts.length > 0 && filteredContacts.length < 1) && (
+            <SearchNotFoundContainer>
+              <img src={loop} alt="Not found o" />
+              <span>
+                nenhum contato foi encontrado para <strong>{`"${searchTerm}""`}</strong>
+              </span>
+            </SearchNotFoundContainer>
+          )}
+
+          {filteredContacts.length > 0 && (
+            <ListHeader order={orderBy}>
               <button type="button" onClick={handleToggleOrderBy}>
                 <span>Name</span>
                 <img src={arrow} alt="Order Arrow" />
               </button>
-            )}
-          </ListHeader>
+            </ListHeader>
+          )}
 
           {filteredContacts.map((item) => (
             <Card key={item.id}>
