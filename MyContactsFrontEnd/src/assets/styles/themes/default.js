@@ -17,6 +17,9 @@ export default {
       main: '#fc5050',
       dark: '#fc3131',
     },
+    success: {
+      main: '#51CA73',
+    },
   },
   boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.04)',
 };

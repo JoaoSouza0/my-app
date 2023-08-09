@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FormGroup } from '../FormGroup';
 import { validations } from '../../utils/validate';
 import { Form, ButtonContainer } from './styles';
@@ -7,17 +7,35 @@ import Input from '../Input';
 import Select from '../Select';
 import Button from '../Button';
 import useErrors from '../../hooks/useErrors';
+import CategoryService from '../../services/CategoryService';
 
-export function ContactForm({ buttonLabel }) {
+export function ContactForm({ buttonLabel, onSubmit }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
-  const [category, setCategory] = useState('');
+  const [categoryId, setCategoryId] = useState('');
+  const [categories, setCategories] = useState([]);
+  const [isLoadingCategories, setIsLoadingCategories] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const {
     setError, removeError, getErrorMessageByFieldName, errors,
   } = useErrors();
 
-  const isFormValid = (name && Object.values(errors).length === 0);
+  const isFormValid = name && Object.values(errors).length === 0;
+
+  useEffect(() => {
+    async function loadCategories() {
+      try {
+        const categoriesList = await CategoryService.listCategories();
+        setCategories(categoriesList);
+      } catch {
+      } finally {
+        setIsLoadingCategories(false);
+      }
+    }
+    loadCategories();
+  }, []);
 
   function handleNameChange({ target }) {
     setName(target.value);
@@ -38,14 +56,23 @@ export function ContactForm({ buttonLabel }) {
       : removeError('email');
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
+    setIsSubmitting(true);
+    await onSubmit({
+      name,
+      email,
+      phone,
+      categoryId,
+    });
+    setIsSubmitting(false);
   }
 
   return (
     <Form onSubmit={handleSubmit} noValidate>
       <FormGroup error={getErrorMessageByFieldName('name')}>
         <Input
+          disabled={isSubmitting}
           error={getErrorMessageByFieldName('name')}
           placeholder="Name *"
           value={name}
@@ -55,6 +82,7 @@ export function ContactForm({ buttonLabel }) {
 
       <FormGroup error={getErrorMessageByFieldName('email')}>
         <Input
+          disabled={isSubmitting}
           type="email"
           error={getErrorMessageByFieldName('email')}
           placeholder="Email"
@@ -65,6 +93,7 @@ export function ContactForm({ buttonLabel }) {
 
       <FormGroup>
         <Input
+          disabled={isSubmitting}
           placeholder="Telefone"
           value={phone}
           onChange={handlePhoneChange}
@@ -72,19 +101,25 @@ export function ContactForm({ buttonLabel }) {
         />
       </FormGroup>
 
-      <FormGroup>
+      <FormGroup isLoading={isLoadingCategories}>
         <Select
-          value={category}
-          onChange={({ target }) => setCategory(target.value)}
+          value={categoryId}
+          disabled={isLoadingCategories || isSubmitting}
+          onChange={({ target }) => setCategoryId(target.value)}
         >
-          <option value="">Category</option>
-          <option value="instagram">Instagram</option>
-          <option value="discod">Discord</option>
+          <option value="">Sem categoria</option>
+          {categories.map((category) => (
+            <option value={category.id} key={category.id}>
+              {category.name}
+            </option>
+          ))}
         </Select>
       </FormGroup>
 
       <ButtonContainer>
-        <Button type="submit" disabled={!isFormValid}>{buttonLabel}</Button>
+        <Button type="submit" disabled={!isFormValid} isLoading={isSubmitting}>
+          {buttonLabel}
+        </Button>
       </ButtonContainer>
     </Form>
   );
@@ -92,4 +127,5 @@ export function ContactForm({ buttonLabel }) {
 
 ContactForm.propTypes = {
   buttonLabel: PropTypes.string.isRequired,
+  onSubmit: PropTypes.func.isRequired,
 };

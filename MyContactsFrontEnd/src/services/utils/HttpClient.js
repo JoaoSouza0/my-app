@@ -6,27 +6,52 @@ class HttpClient {
     this.baseUrl = baseUrl;
   }
 
-  async get(endpoint) {
-    await delay(1000);
-    const response = await fetch(`${this.baseUrl}${endpoint}`);
-    const contentType = response.headers.get('Content-Type');
-
-    let body = null;
-    if (contentType.includes('application/json')) {
-      body = await response.json();
-    }
-
-    if (response.ok) {
-      return body;
-    }
-
-    throw new APIError(response, body);
+  async get(endpoint, options) {
+    return this.request(endpoint, {
+      method: 'GET',
+      headers: options?.headers,
+    });
   }
 
-  async post(endpoint, body) {
-    const response = await fetch(`${this.baseUrl}${endpoint}`, body);
+  async post(endpoint, options) {
+    return this.request(endpoint, {
+      method: 'POST',
+      body: options?.body,
+      headers: options?.headers,
+    });
+  }
+
+  async request(path, options) {
+    const headers = new Headers();
+    if (options.body) {
+      headers.append('Content-Type', 'application/json');
+    }
+
+    if (options?.headers) {
+      Object.entries(options.headers).forEach(([name, value]) => {
+        headers.append(name, value);
+      });
+    }
+
+    const resp = await fetch(`${this.baseUrl}${path}`, {
+      method: options.method,
+      body: JSON.stringify(options.body),
+      headers,
+    });
     await delay(1000);
-    return response.json();
+
+    let response = null;
+    const contentType = resp?.headers.get('Content-Type');
+
+    if (contentType.includes('application/json')) {
+      response = await resp.json();
+    }
+
+    if (resp.ok) {
+      return response;
+    }
+
+    throw new APIError(response, response);
   }
 }
 

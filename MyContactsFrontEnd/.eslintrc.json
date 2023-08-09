@@ -21,6 +21,8 @@
     "no-param-reassign": "off",
     "class-methods-use-this":"off",
     "no-confusing-arrow":"off",
-    "react/jsx-one-expression-per-line": "off"
+    "react/jsx-one-expression-per-line": "off",
+    "no-empty": ["error", { "allowEmptyCatch": true }]
+
   }
 }
