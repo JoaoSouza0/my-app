@@ -8,6 +8,7 @@ import Select from '../Select';
 import Button from '../Button';
 import useErrors from '../../hooks/useErrors';
 import CategoryService from '../../services/CategoryService';
+import { toastEventManager } from '../../utils/toast';
 
 export function ContactForm({ buttonLabel, onSubmit }) {
   const [name, setName] = useState('');
@@ -59,12 +60,24 @@ export function ContactForm({ buttonLabel, onSubmit }) {
   async function handleSubmit(event) {
     event.preventDefault();
     setIsSubmitting(true);
-    await onSubmit({
-      name,
-      email,
-      phone,
-      categoryId,
-    });
+    try {
+      await onSubmit({
+        name,
+        email,
+        phone,
+        categoryId,
+      });
+      toastEventManager.emit('addtoast', {
+        type: 'success',
+        text: 'Contato cadastrado com sucesso',
+      });
+    } catch (error) {
+      toastEventManager.emit('addtoast', {
+        type: 'danger',
+        text: error.message,
+      });
+    }
+
     setIsSubmitting(false);
   }
 
